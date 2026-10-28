@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Learn AI</title>
+<style>
+:root {
+  --bg: #0E1512; --surface: #16211C; --ink: #EEF5F0; --muted: #9AAA9F; --rule: #2A3B33;
+  --accent: #B5F28A; --accent-soft: #1E2F24; --warn: #F2C879; --warn-soft: #2E2A1A; --code-bg: #1C2A23;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 18px; line-height: 1.65;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px));
+}
+.wrap { max-width: 46rem; margin: 0 auto; min-width: 0; }
+h1, h2, h3 { font-family: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; text-wrap: balance; line-height: 1.2; margin: 0; }
+p { margin: 0 0 0.9em; max-width: 65ch; }
+a { color: var(--accent); }
+code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.92em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+[hidden] { display: none !important; }
+button:disabled { cursor: not-allowed; }
+
+.site-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 18px; padding: 12px 0 14px; border-bottom: 1px solid var(--rule); margin-bottom: 8px; }
+.brand { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--ink); text-decoration: none; }
+.site-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.site-nav ul a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 6px; text-decoration: none; color: var(--ink); font-size: 0.98rem; }
+.site-nav ul a:hover, .site-nav ul a:focus-visible { background: var(--accent-soft); outline: none; }
+.site-nav ul a[aria-current="page"] { background: var(--accent); color: var(--bg); }
+.hero { padding: 32px 0 24px; border-bottom: 1px solid var(--rule); }
+.eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hero h1 { font-size: clamp(2.4rem, 8vw, 3.6rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px; }
+.lede { font-size: 1.2rem; }
+.back { display: inline-block; margin-top: 24px; font-size: 1rem; }
+
+.level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 28px; }
+.level { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 20px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); color: var(--ink); text-decoration: none; }
+.level:hover, .level:focus-visible { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px var(--accent-soft); }
+.level h2 { font-size: 1.5rem; font-weight: 800; }
+.level p { margin: 0; font-size: 1rem; color: var(--muted); }
+.level .tag { align-self: flex-start; font-family: "IBM Plex Mono", monospace; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
+
+.support { margin-top: 36px; padding: 20px; border: 1px dashed var(--rule); border-radius: 8px; background: var(--surface); }
+.support h2 { font-size: 1.2rem; margin-bottom: 6px; }
+.support p { color: var(--muted); font-size: 1rem; margin-bottom: 14px; }
+.donate { font: inherit; font-size: 0.98rem; padding: 9px 16px; border-radius: 6px; border: 1px dashed var(--accent); background: var(--surface); color: var(--accent); opacity: 0.8; }
+.wallets { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 10px; }
+.wallets li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-width: 0; }
+.wallets .coin { font-weight: 600; min-width: 9em; }
+.wallets .addr { flex: 1 1 12rem; min-width: 0; overflow-wrap: anywhere; }
+.wallets .addr:empty::before { content: "Address not added yet"; color: var(--muted); font-family: "IBM Plex Sans", system-ui, sans-serif; }
+.wallets button { font: inherit; font-size: 0.92rem; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--accent); background: transparent; color: var(--accent); cursor: pointer; }
+.wallets button:disabled { opacity: 0.5; border-color: var(--rule); color: var(--muted); }
+
+.progress { margin: 20px 0 0; padding: 16px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; }
+.progress-top { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.bar { height: 8px; background: var(--rule); border-radius: 4px; overflow: hidden; }
+.bar > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.25s ease; }
+.progress p { margin: 10px 0 0; font-size: 0.92rem; color: var(--muted); }
+
+.part { padding: 40px 0 8px; }
+.part-kicker { font-family: "IBM Plex Mono", monospace; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.part h2 { font-size: clamp(1.8rem, 5vw, 2.3rem); font-weight: 800; margin-bottom: 10px; }
+.part-intro { color: var(--muted); margin-bottom: 8px; font-size: 1.05rem; }
+
+.lesson { padding: 28px 0; border-top: 1px solid var(--rule); min-width: 0; }
+.lesson-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+.num { font-family: "IBM Plex Mono", monospace; font-size: 0.85rem; color: var(--muted); letter-spacing: 0.04em; }
+.done { display: inline-flex; align-items: center; gap: 8px; font-size: 0.95rem; color: var(--muted); cursor: pointer; padding: 6px 4px; }
+.done input { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+.lesson h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 12px; }
+.try, .watch { margin-top: 14px; padding: 14px 16px; border-radius: 6px; }
+.try { background: var(--accent-soft); }
+.watch { background: var(--warn-soft); }
+.try strong, .watch strong { display: block; font-size: 0.82rem; font-family: "IBM Plex Mono", monospace; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+.try strong { color: var(--accent); }
+.watch strong { color: var(--warn); }
+.try p, .watch p { margin: 0; }
+
+
+.checklist { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.checklist li { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; }
+.checklist .tick { font-family: "IBM Plex Mono", monospace; color: var(--accent); }
+
+
+.real { margin-top: 14px; padding: 14px 16px; border-radius: 6px; background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent); }
+.real strong { display: block; font-size: 0.82rem; font-family: "IBM Plex Mono", monospace; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; color: var(--muted); }
+.real p { margin: 0; }
+.real code { overflow-wrap: anywhere; }
+.part-intro a { color: var(--accent); }
+.prompt { margin-top: 14px; padding: 14px 16px; border-radius: 6px; border: 1px dashed var(--accent); }
+.prompt strong { display: block; font-size: 0.82rem; font-family: "IBM Plex Mono", monospace; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; color: var(--accent); }
+.prompt p { margin: 0; }
+.code { margin: 14px 0 0; padding: 14px 16px; background: var(--code-bg); border: 1px solid var(--rule); border-radius: 6px; overflow-x: auto; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.82rem; line-height: 1.55; white-space: pre; max-width: 100%; }
+.tbl-wrap { margin-top: 14px; overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.tbl th, .tbl td { padding: 9px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+.tbl thead th { font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--surface); }
+.tbl tbody th { font-weight: 600; white-space: nowrap; }
+.tbl tr:last-child th, .tbl tr:last-child td { border-bottom: none; }
+.tbl .n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 1rem; font-weight: 600; padding: 12px 18px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: var(--bg); cursor: pointer; text-decoration: none; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn.small { padding: 7px 13px; font-size: 0.92rem; }
+.cta { margin-top: 36px; padding: 22px 20px; border: 1px solid var(--accent); border-radius: 8px; background: var(--accent-soft); }
+.cta p { margin: 0 0 14px; font-size: 1.15rem; }
+.choices { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.choice { display: flex; gap: 10px; align-items: flex-start; min-width: 0; padding: 14px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); cursor: pointer; }
+.choice input { margin-top: 5px; width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+.choice.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.choice strong { display: block; }
+.choice span { color: var(--muted); font-size: 0.95rem; }
+.choice span strong { color: var(--ink); font-size: 1.05rem; }
+.field-label { display: block; font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 16px 0 6px; }
+.field { display: block; width: 100%; font: inherit; font-size: 1rem; line-height: 1.5; color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; }
+textarea.field { min-height: 8.5rem; resize: vertical; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip { font: inherit; font-size: 0.92rem; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer; }
+.chip:hover { border-color: var(--accent); }
+.steps { margin-top: 14px; padding: 14px 16px; border-radius: 6px; background: var(--accent-soft); }
+.steps strong { display: block; font-size: 0.82rem; font-family: "IBM Plex Mono", monospace; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; color: var(--accent); }
+.steps ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+.steps li { min-width: 0; }
+.code.wrap { white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible; }
+.actions { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.copy-status { font-size: 0.95rem; color: var(--muted); }
+.tests { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+.tests label { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; cursor: pointer; }
+.tests input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--accent); flex: none; }
+.pair { display: grid; gap: 10px; margin-top: 14px; }
+.example { padding: 12px 14px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+.example h4 { margin: 0 0 4px; font-size: 1rem; font-family: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; }
+.example p { margin: 0; font-size: 0.98rem; }
+.done-panel { margin-top: 32px; padding: 22px 20px; border: 1px solid var(--accent); border-radius: 8px; background: var(--accent-soft); }
+.field:focus-visible, textarea:focus-visible, .choice:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+a:focus-visible, button:focus-visible, .done input:focus-visible, .code:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--rule); font-size: 0.95rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .bar > span { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="wrap site-nav">
+  <a class="brand" href="#home" data-view="home">Learn AI</a>
+  <nav aria-label="Pages">
+    <ul>
+      <li><a href="#home" data-view="home">Home</a></li>
+      <li><a href="#style" data-view="style">Building style</a></li>
+      <li><a href="#build" data-view="build">Build your own</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="wrap">
+
+<!-- HOME -->
+<section class="view" id="view-home">
+  <header class="hero">
+    <p class="eyebrow">Learn AI</p>
+    <h1>How these projects get built</h1>
+    <p class="lede">A short course on building with AI, taken from my own projects folder.</p>
+  </header>
+
+  <div class="level-grid">
+    <a class="level" href="#style" data-view="style">
+      <span class="tag">Start here</span>
+      <h2>Building style</h2>
+      <p>How these projects are made, step by step, from the first file to the last check.</p>
+    </a>
+    <a class="level" href="#build" data-view="build">
+      <span class="tag">Hands-on</span>
+      <h2>Build your own</h2>
+      <p>Make a small working tool in eight steps, save it, and improve it.</p>
+    </a>
+  </div>
+
+  <div class="support">
+    <h2>Support the site</h2>
+    <p>Everything here is free. If this helps you, a donation is appreciated.</p>
+    <!-- Paste public receiving addresses inside the code elements below. Leave empty until they are ready. -->
+    <ul class="wallets">
+      <li>
+        <span class="coin">Bitcoin (BTC)</span>
+        <code class="addr" id="addr-btc"></code>
+        <button class="copy-addr" type="button" data-target="addr-btc" disabled>Copy</button>
+      </li>
+      <li>
+        <span class="coin">Solana (SOL)</span>
+        <code class="addr" id="addr-sol"></code>
+        <button class="copy-addr" type="button" data-target="addr-sol" disabled>Copy</button>
+      </li>
+    </ul>
+    <button class="donate" type="button" disabled>Donate</button>
+  </div>
+</section>
+
+<!-- BUILDING STYLE -->
+<section class="view" id="view-style" hidden>
+  <header class="hero">
+    <p class="eyebrow">Building style</p>
+    <h1>How I make it</h1>
+    <p class="lede">Every step below comes from files in the project folder: the numbered backups, the audit lists, the notes and the launcher. Where a step has words to say to the AI, those are suggestions in the same spirit, not quotes. Follow the steps in order and you will make something the way these projects were made.</p>
+  </header>
+
+  <div class="progress" data-progress data-key="learn-ai-style-2" aria-live="polite">
+    <div class="progress-top"><span class="progress-label">0 of 15 done</span><span class="progress-pct">0%</span></div>
+    <div class="bar"><span></span></div>
+    <p>Tick a lesson when you finish it. Your ticks are saved in this browser only.</p>
+  </div>
+
+  <div class="lesson" style="border-top:none; padding-bottom:0;">
+    <h3 style="margin-bottom:10px;">The recipe in one go</h3>
+    <ul class="checklist">
+      <li><span class="tick">01</span><span>Pick a target: one picture and one sentence.</span></li>
+      <li><span class="tick">02</span><span>Start one file, with a settings block and a launcher.</span></li>
+      <li><span class="tick">03</span><span>Ask for the smallest version that does the sentence.</span></li>
+      <li><span class="tick">04</span><span>Run it yourself. Send back the whole error, or what you saw.</span></li>
+      <li><span class="tick">05</span><span>When it works, save a numbered copy named for what it does.</span></li>
+      <li><span class="tick">06</span><span>Change one thing. The change that makes the others easier goes first.</span></li>
+      <li><span class="tick">07</span><span>Ask what was not tested, and test that part yourself.</span></li>
+      <li><span class="tick">08</span><span>Every few features, ask for a list of problems with IDs, and check each one.</span></li>
+      <li><span class="tick">09</span><span>Fix by ID, then save the next numbered copy.</span></li>
+      <li><span class="tick">10</span><span>When the file gets big, write the map, the confidence tags and the limits.</span></li>
+    </ul>
+  </div>
+
+  <section class="part">
+    <p class="part-kicker">Part 1</p>
+    <h2>Set up the ground</h2>
+    <p class="part-intro">Do this once, before the first feature.</p>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 01</span><label class="done"><input type="checkbox" data-lesson="1"> Done</label></header>
+      <h3>One file you can open</h3>
+      <p>Each big project lives in one file. The game is about 6,900 lines, the physics engine about 10,900, and the main app about 31,000. Even the app's two helper programs sit inside it as text and start from memory. There is nothing to link up and nothing to lose, and the whole thing can be copied, backed up or handed to an AI in one go.</p>
+      <div class="real"><strong>From the folder</strong><p><code>voidcraft.py</code>, <code>physics_engine.py</code> and <code>VoidLoader-new.py</code>. The physics engine's own header describes itself as "one file".</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Write this as one Python file. No other files, and no folders of helpers."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>A file this big needs a map, or you will get lost in it. That is lesson 13.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 02</span><label class="done"><input type="checkbox" data-lesson="2"> Done</label></header>
+      <h3>Put every number you might change in one block</h3>
+      <p>The first lines of the file are a block of settings. Each line says what it does and what range makes sense, so you can change the feel of the game without reading any code.</p>
+      <pre class="code" tabindex="0"># ═══════════════════════════════════════════════
+#  &gt;&gt;&gt;  EDIT YOUR SETTINGS HERE  &lt;&lt;&lt;
+# ═══════════════════════════════════════════════
+TARGET_FPS        = 60
+RENDER_DIST       = 15
+STORM_STRENGTH    = 0.85      # 0..1: how far the sky is pulled to storm grey
+HARDNESS_SCALE   = 1.0       # multiplies every block's hit points (2.0 = twice as tough, 0.5 = softer)</pre>
+      <div class="real"><strong>From the folder</strong><p>These lines are from the top of <code>voidcraft.py</code>.</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Put every number I might want to change into one settings block at the top. Give each a comment with what it does and its sensible range."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>A setting with no range in its comment is a guess waiting to happen.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 03</span><label class="done"><input type="checkbox" data-lesson="3"> Done</label></header>
+      <h3>Write a launcher that keeps the error on screen</h3>
+      <p>The game starts from a small launcher file. It picks the Python launcher if there is one, installs the graphics package once if it is missing, and runs the game. The last four lines matter most: if the game exits with an error, the window stays open, so you can copy the message and send it back.</p>
+      <pre class="code" tabindex="0">@echo off
+cd /d "%~dp0"
+title Voidcraft
+set PY=python
+where py &gt;nul 2&gt;nul &amp;&amp; set PY=py
+%PY% -c "import wgpu" &gt;nul 2&gt;nul
+if errorlevel 1 (
+    echo Installing the Vulkan renderer ^(wgpu^), one time only...
+    %PY% -m pip install wgpu
+)
+%PY% voidcraft.py %*
+if errorlevel 1 (
+    echo.
+    echo Voidcraft exited with an error. See the message above.
+    pause
+)</pre>
+      <div class="real"><strong>From the folder</strong><p>This is <code>run_voidcraft.bat</code>, saved next to the game file in every backup.</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Write a .bat launcher for tool.py. Use py if it exists, install anything missing once and say so, run the file, and pause only if it exits with an error."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>Without the pause, a crash closes the window and the error is lost.</p></div>
+    </article>
+  </section>
+
+  <section class="part">
+    <p class="part-kicker">Part 2</p>
+    <h2>Make one feature, start to finish</h2>
+    <p class="part-intro">The same six steps for every feature, big or small.</p>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 04</span><label class="done"><input type="checkbox" data-lesson="4"> Done</label></header>
+      <h3>Pick a target: a picture and a sentence</h3>
+      <p>Before any code, get a picture of what you want and write one sentence for the first milestone. For the game's destruction, the picture shows a stone tower snapping at its base and leaning over, with dust, loose blocks and a dug-out hole in the ground. The sentence is one pillar that stands, tips when its base is dug out, and falls as one solid piece.</p>
+      <div class="real"><strong>From the folder</strong><p><code>VoidCraft Voxel Pillar Collapse.png</code>, titled "VOIDCRAFT - DESTRUCTION CONCEPT" in its corner. Its file time is about 24 minutes before backup 9, the copy that adds structures and rigid bodies.</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Here is the picture. First milestone: one pillar that stands, tips over when I dig out its base, and falls as one solid piece. Nothing else yet."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>Say what is not in this milestone. It keeps the AI from adding things you did not ask for.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 05</span><label class="done"><input type="checkbox" data-lesson="5"> Done</label></header>
+      <h3>Ask for the smallest version</h3>
+      <p>Ask for one change to the file you already have, and ask where it goes before it is written. Small changes are easy to check. Look at how small the steps in the real project were: backup 3 added one thing, a debris system, and backup 7 added one function.</p>
+      <div class="real"><strong>From the folder</strong><p>Backup 3 adds the class <code>DebrisSystem</code>. Backup 7 adds the function <code>_separate</code>. Nothing else is new in either.</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Give me the smallest version of this as one change to my current file. Show me where it goes first, and do not touch anything else."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>If the AI sends back the whole file, check the line count against yours. A big drop means something was lost.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 06</span><label class="done"><input type="checkbox" data-lesson="6"> Done</label></header>
+      <h3>Run it yourself, and send back everything</h3>
+      <p>The AI cannot run the game on your machine, so you are the tester. Save the file, double-click the launcher, and try the new thing. If it breaks, copy the whole error from the window that stayed open. If it runs but looks wrong, say what you expected and what you saw.</p>
+      <div class="prompt"><strong>Say this</strong><p>"I ran it with the .bat. I expected the pillar to tip when I dug under it. It stayed standing. Here is the full console output: (paste all of it)."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>Paste the whole message, not just the last line. The cause is often a few lines up.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 07</span><label class="done"><input type="checkbox" data-lesson="7"> Done</label></header>
+      <h3>Save a numbered copy when it works</h3>
+      <p>As soon as a feature works, copy the file with a number before you change anything else. The game folder holds eleven numbered copies plus the current file. Put them side by side and you can see the whole build, one working step at a time.</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th scope="col">Copy</th><th scope="col" class="n">Lines</th><th scope="col">What it added</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">backup 1</th><td class="n">2,157</td><td>The starting point</td></tr>
+          <tr><th scope="row">backup 2 "dirt"</th><td class="n">2,349</td><td>Digging, and a dirt ground</td></tr>
+          <tr><th scope="row">backup 3</th><td class="n">2,482</td><td>A debris system</td></tr>
+          <tr><th scope="row">backup 4</th><td class="n">3,006</td><td>Dirt cubes, particles, chainsaw, explosion and fireball effects</td></tr>
+          <tr><th scope="row">backup 5</th><td class="n">3,138</td><td>Damage marks on blocks</td></tr>
+          <tr><th scope="row">backup 6</th><td class="n">3,172</td><td>Support checks: what holds what up</td></tr>
+          <tr><th scope="row">backup 7</th><td class="n">3,245</td><td>One function, <code>_separate</code></td></tr>
+          <tr><th scope="row">backup 8</th><td class="n">3,255</td><td>No new functions, only changes inside old ones</td></tr>
+          <tr><th scope="row">copy 9</th><td class="n">4,495</td><td>Structures and rigid bodies: the pillar</td></tr>
+          <tr><th scope="row">copy 10</th><td class="n">4,696</td><td>Weapons and projectiles</td></tr>
+          <tr><th scope="row">copy 11</th><td class="n">4,786</td><td>A frame-rate meter, and small additions</td></tr>
+          <tr><th scope="row">current</th><td class="n">5,457</td><td>Integrity panel, laser and melting, optional GPU physics</td></tr>
+        </tbody>
+      </table></div>
+      <div class="real"><strong>From the folder</strong><p>Files in <code>restored/backup/</code>. By their file times, copies 1 to 8 were saved within about three hours of each other.</p></div>
+      <div class="try"><strong>Have a go</strong><p>When a feature works, copy the file as <code>name-backupN-feature.py</code> before you touch it again.</p></div>
+      <div class="watch"><strong>Good to know</strong><p>Only one of these copies has the feature in its name. Name them all and you will never open three to find the right one.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 08</span><label class="done"><input type="checkbox" data-lesson="8"> Done</label></header>
+      <h3>Change one thing, and do the enabling change first</h3>
+      <p>Before a run of changes, ask for them in order. A saved plan for the game's graphics lists six upgrades. The first is not the flashiest: it changes how lighting is stored so that everything after it gets easier. The plan says nothing should look different afterwards, and to check that before moving on. The same plan lists what to skip, and asks whether the game should stay blocky but well lit or chase photo realism.</p>
+      <div class="real"><strong>From the notes</strong><p>"Everything below depends on this, so check it matches the current look before moving on."</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"List the changes I want in the order that makes each one easier. Say which goes first and why, what should look identical afterwards, and what we are not doing."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>A change that should look identical is a good test. If it looks different, something broke.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 09</span><label class="done"><input type="checkbox" data-lesson="9"> Done</label></header>
+      <h3>Ask what was not tested</h3>
+      <p>At the end of a session, ask for an "unfinished" note: what the AI could not check, and how to check it on your own machine. The game folder has one. It says the tests ran on Linux, that the Windows build starts its workers differently, and what to run to confirm it.</p>
+      <div class="real"><strong>From the folder</strong><p><code>notes/notes.txt</code> opens with "### unfinished ###". One line reads: "My tests ran on Linux... Run the game as a script once, then the .exe if you use one, and confirm the first mesh loads without a stall."</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Before we stop, write a short 'unfinished' note: what you could not test here, and exactly how I can check each thing on my machine."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>Keep the note in a notes folder beside the backups. Do the checks at the start of the next session.</p></div>
+    </article>
+  </section>
+
+  <section class="part">
+    <p class="part-kicker">Part 3</p>
+    <h2>Check it</h2>
+    <p class="part-intro">Every few features, stop adding and look for what is wrong.</p>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 10</span><label class="done"><input type="checkbox" data-lesson="10"> Done</label></header>
+      <h3>Ask for a list of problems with IDs</h3>
+      <p>Ask the AI to read the whole file and list what is wrong, in groups, each with an ID. The game folder has one with 19 findings: P1 to P7 for performance, R1 to R6 for rendering, D1 to D6 for physics. Each has the function it lives in, what happens, and a one-line fix. Then you can say "fix P3 and P4" and nothing else.</p>
+      <div class="real"><strong>From the folder</strong><p><code>buggy/Verified findings.txt</code>. P3 reads: a blur is computed, then its result is replaced by a flat array of ones, so the work is wasted. Fix: "Either restore the AO calculation or remove the blur."</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Read the whole file. List problems under Performance, Rendering and Physics. Give each an ID (P1, R1, D1), the function it is in, what happens, and a one-line fix. Only list what you can see in the code."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>Fix a few IDs at a time, then run it and save the next numbered copy.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 11</span><label class="done"><input type="checkbox" data-lesson="11"> Done</label></header>
+      <h3>Check the list before you trust it</h3>
+      <p>A list of problems is itself a claim. In the findings file, D6 is headed "not a defect in this file": an earlier review said an explosion light never fades, but in this file it does. For the main app, a second pass checked all sixteen findings of a first review. It said some were too absolute, and that two rated green could affect how the app works.</p>
+      <div class="real"><strong>From the folder</strong><p><code>VoidLoader_Audit_Verification.txt</code>: "Real vulnerability; 'any website' needs qualification."</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Here is another review of the same file. For each finding say confirmed, overstated or wrong, and point to the line that shows it."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>A second AI is only a second guesser. Wherever you can, check by running the thing.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 12</span><label class="done"><input type="checkbox" data-lesson="12"> Done</label></header>
+      <h3>A claim is not a fact</h3>
+      <p>One small project exists only to prove this. The AI may claim and propose, but only the program records what really happened, and "verified" is worked out from the records, never written down. A deliberately dishonest test agent made sixteen claims, and only two survived with evidence behind them.</p>
+      <div class="real"><strong>From the README</strong><p>"There is no field a model could set to verified."</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Of the things you just told me, which did you run and see, and which did you only read in the code?"</p></div>
+      <div class="watch"><strong>Good to know</strong><p>A test the AI wrote itself is not independent proof. The project labels it "passed, not independent".</p></div>
+    </article>
+  </section>
+
+  <section class="part">
+    <p class="part-kicker">Part 4</p>
+    <h2>Write it down</h2>
+    <p class="part-intro">When a file gets big, notes keep you in control of it.</p>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 13</span><label class="done"><input type="checkbox" data-lesson="13"> Done</label></header>
+      <h3>Get a map written beside the file</h3>
+      <p>The 31,000-line app has a code map: a table of line ranges and what each layer does, then three edit zones. Safe is things like constants and themes. Careful is pages that are rebuilt often. Fragile is the tab system and startup order. It also lists functions called by name from text, so a normal search will not find them.</p>
+      <div class="real"><strong>From the map</strong><p>"Renaming a Settings tab title silently breaks its set_* method." A fact like that is easy to forget and costly to find again.</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Read the whole file. Write a code map: a table of line ranges and what each layer does, then Safe, Careful and Fragile edit zones, and anything called by a built string that a search would miss. Say what you did not check."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>A map goes stale. Ask for it again after big changes, and put what changed at the top.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 14</span><label class="done"><input type="checkbox" data-lesson="14"> Done</label></header>
+      <h3>Tag how sure each note is, and write the limits</h3>
+      <p>The long knowledge file opens by saying everything came from reading the code, and nothing was run. Statements carry tags: [CODE] means it is visible in the source, [UNTESTED] means it looks like it could misbehave but needs a real run, and [YOUR NOTE] means you reported it. The trust project ends with a Limits section that says plainly what it cannot do.</p>
+      <div class="real"><strong>From the notes</strong><p>"HOW MUCH TO TRUST THIS: everything comes from READING the code. Nothing was run."</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Tag every statement: [CODE] if you can see it in the source, [RAN] if you ran it and saw it, [UNTESTED] if it is a guess. End with a Limits section."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>A limit you wrote yourself is a favour to the next person. A limit someone else finds is a bug report.</p></div>
+    </article>
+  </section>
+
+  <section class="part">
+    <p class="part-kicker">Part 5</p>
+    <h2>Own the parts</h2>
+    <p class="part-intro">What to build from scratch, and how to keep it safe.</p>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Lesson 15</span><label class="done"><input type="checkbox" data-lesson="15"> Done</label></header>
+      <h3>Build the part that makes it yours, and keep a way back</h3>
+      <p>The big projects carry their own engines: a model loader of 1,312 lines, a physics engine that runs on the graphics card, and a Vulkan renderer. The payoff is that you understand every part and it all works offline. Each has a way back. The tools run on the processor if the graphics-card package is missing, and the older graphics path stays as a basic fallback. Heavy parts run as their own program: the physics menu starts the engine separately and reads its formula list from the file's text without running it.</p>
+      <div class="real"><strong>From the folder</strong><p><code>USE_GPU = True</code> with the comment "use the NVIDIA GPU if CuPy is installed, otherwise the CPU". <code>physics_menu.py</code> is under 8 KB. The engine it launches is over 500 KB.</p></div>
+      <div class="prompt"><strong>Say this</strong><p>"Add the fast path, but keep the plain one. If the fast one fails to start, fall back and tell me why in one line."</p></div>
+      <div class="watch"><strong>Good to know</strong><p>Building your own engine costs a lot of time. Do it only for the parts that make the project yours.</p></div>
+    </article>
+  </section>
+
+  <div class="cta">
+    <p>You have seen how it is done. Now make something of your own.</p>
+    <a class="btn" href="#build" data-view="build">Ready? Build your own &rarr;</a>
+  </div>
+
+  <p><a class="back" href="#home" data-view="home">Back to home</a></p>
+</section>
+
+<!-- BUILD YOUR OWN -->
+<section class="view" id="view-build" hidden>
+  <header class="hero">
+    <p class="eyebrow">Build your own</p>
+    <h1>Make a working tool</h1>
+    <p class="lede">In eight steps you will make a small tool that runs in your browser, save it, and add one improvement. This page is an activity: you finish with something that works. Plan on an hour or so.</p>
+  </header>
+
+  <div class="lesson" style="border-top:none; padding-bottom:0;">
+    <h3 style="margin-bottom:10px;">What you need</h3>
+    <ul class="checklist">
+      <li><span class="tick">01</span><span>A free AI chat assistant. Any one will do.</span></li>
+      <li><span class="tick">02</span><span>A plain text editor: Notepad on Windows, or TextEdit on a Mac.</span></li>
+      <li><span class="tick">03</span><span>A web browser, such as Chrome, Edge, Firefox or Safari.</span></li>
+    </ul>
+    <div class="watch"><strong>Before you start</strong><p>Every tool on this page is a single HTML file that runs in your browser. No Python or other programming tools yet, and nothing to install.</p></div>
+    <p style="margin-top:14px;">At the end you will have a tool you can open any time, a saved copy of the first working version, and one improvement on top. This is the same loop described in <a href="#style" data-view="style">How I make it</a>, at a size you can finish in one sitting.</p>
+  </div>
+
+  <div class="progress" data-progress data-key="learn-ai-build" aria-live="polite">
+    <div class="progress-top"><span class="progress-label">0 of 8 done</span><span class="progress-pct">0%</span></div>
+    <div class="bar"><span></span></div>
+    <p>Tick each step when you finish it. Your ticks and your answers are saved in this browser only.</p>
+  </div>
+
+  <section class="part">
+    <p class="part-kicker">Part 1</p>
+    <h2>Plan it</h2>
+    <p class="part-intro">Two short steps before you touch the AI.</p>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Step 01</span><label class="done"><input type="checkbox" data-lesson="1"> Done</label></header>
+      <h3>Pick something small</h3>
+      <p>Choose something you would enjoy using, and keep it small. Pick one below, or choose your own idea.</p>
+      <div class="choices" role="radiogroup" aria-label="What are you building?">
+        <label class="choice"><input type="radio" name="kind" value="checklist"><span><strong>A checklist</strong>Add tasks and tick them off.</span></label>
+        <label class="choice"><input type="radio" name="kind" value="calculator"><span><strong>A calculator</strong>Buttons, sums and a big display.</span></label>
+        <label class="choice"><input type="radio" name="kind" value="game"><span><strong>A simple game</strong>Catch falling dots and keep a score.</span></label>
+        <label class="choice"><input type="radio" name="kind" value="own"><span><strong>My own idea</strong>Something you would use yourself.</span></label>
+      </div>
+      <div class="watch"><strong>Good to know</strong><p>If you cannot describe it in a sentence, the idea is still too big. Cut it down to the first thing it must do.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Step 02</span><label class="done"><input type="checkbox" data-lesson="2"> Done</label></header>
+      <h3>Describe the first working version</h3>
+      <p>Write a few plain sentences covering three things: what you will type or click, what should appear on the screen, and how you will know it works. We have filled in an example for your pick. Change it until it sounds like what you want.</p>
+      <label class="field-label" for="desc">Your description</label>
+      <textarea class="field" id="desc" rows="6" placeholder="Pick what you are building in step 1, or write your own here. For example: I want a ___ where I can ___. I click or type ___ and ___ appears. I will know it works when ___."></textarea>
+      <div class="watch"><strong>Good to know</strong><p>Describe only the first version. You will add the extras one at a time in step 8.</p></div>
+    </article>
+  </section>
+
+  <section class="part">
+    <p class="part-kicker">Part 2</p>
+    <h2>Build the first version</h2>
+    <p class="part-intro">Get a file on your computer, ask for the code, and run it.</p>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Step 03</span><label class="done"><input type="checkbox" data-lesson="3"> Done</label></header>
+      <h3>Get ready to run it</h3>
+      <p>Your tool will be a single HTML file, which is a web page saved as a file. It is not Python or any other kind of program. It runs in your browser, so there is nothing to install. Set up a home for it now, so the code has somewhere to go.</p>
+      <div class="steps"><strong>Set up</strong>
+        <ol>
+          <li><b>Make a folder</b> on your desktop called <code>my first tool</code>.</li>
+          <li><b>Windows:</b> open Notepad. <b>Mac:</b> open TextEdit, then open the Format menu and choose Make Plain Text.</li>
+          <li>When you have the code (step 4), paste it into the empty file and save it in your folder as <code>tool.html</code>.</li>
+          <li><b>Windows only:</b> in the Save window, set "Save as type" to All files. Otherwise Windows saves it as <code>tool.html.txt</code> and it will not open as a page.</li>
+          <li><b>To run it,</b> double-click <code>tool.html</code>. It opens in your browser.</li>
+        </ol>
+      </div>
+      <div class="watch"><strong>Good to know</strong><p>When you change the file later, save it and press F5 in the browser (Cmd+R on a Mac) to see the new version. Do not type passwords or private details into your tool or the chat.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Step 04</span><label class="done"><input type="checkbox" data-lesson="4"> Done</label></header>
+      <h3>Ask the AI to build it</h3>
+      <p>Open a new chat in your AI assistant and send this. It updates as you edit your description in step 2.</p>
+      <pre class="code wrap" id="prompt1" tabindex="0"></pre>
+      <div class="actions"><button type="button" class="btn small copy-btn" data-source="prompt1">Copy prompt</button><span class="copy-status" role="status"></span></div>
+      <p style="margin-top:14px;">When the reply arrives, copy the code, paste it into <code>tool.html</code> as in step 3, save, and double-click the file.</p>
+      <div class="watch"><strong>Good to know</strong><p>If the code comes in several pieces, reply: "Please give me the complete file in one piece."</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Step 05</span><label class="done"><input type="checkbox" data-lesson="5"> Done</label></header>
+      <h3>Try it</h3>
+      <p>Open your tool and work down this list. Tick each line as it works. Anything that does not work is useful: it goes into step 6.</p>
+      <ul class="tests" id="tests"></ul>
+      <div class="watch"><strong>Good to know</strong><p>Try it the way someone else would use it, not only the way you built it.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Step 06</span><label class="done"><input type="checkbox" data-lesson="6"> Done</label></header>
+      <h3>Report what happened</h3>
+      <p>If something is wrong, tell the AI three things: what you did, what you expected, and what happened instead. If the page shows nothing or breaks, add the error message. To find it, press F12 in the browser (Cmd+Option+J in Chrome on a Mac), click the Console tab, and copy any red text.</p>
+      <pre class="code wrap" id="report" tabindex="0">What I did:
+What I expected:
+What happened instead:
+Error message from the Console (if any):</pre>
+      <div class="actions"><button type="button" class="btn small copy-btn" data-source="report">Copy this template</button><span class="copy-status" role="status"></span></div>
+      <div class="pair">
+        <div class="example"><h4>Nothing happens</h4><p class="say">"I typed 'milk' and clicked Add. I expected it to appear in the list. Nothing appeared. The Console shows red text: (paste it here)."</p></div>
+        <div class="example"><h4>The wrong result</h4><p class="say">"I clicked 2, then plus, then 3, then equals. I expected 5. The display shows 23."</p></div>
+        <div class="example"><h4>It looks wrong</h4><p class="say">"The two buttons sit on top of each other and I cannot read the second one. I would like more space between them."</p></div>
+        <div class="example"><h4>It works</h4><p class="say">"It all works. Please do nothing else yet. I am going to save this version."</p></div>
+      </div>
+      <div class="watch"><strong>Good to know</strong><p>Ask for one fix at a time, and always ask for the complete file back. Then run it again, and save it if it works.</p></div>
+    </article>
+  </section>
+
+  <section class="part">
+    <p class="part-kicker">Part 3</p>
+    <h2>Keep it, then improve it</h2>
+    <p class="part-intro">Save what works before you change anything.</p>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Step 07</span><label class="done"><input type="checkbox" data-lesson="7"> Done</label></header>
+      <h3>Save the working version</h3>
+      <p>When everything on your list works, make a copy before you do anything else. Then you always have a version you can go back to.</p>
+      <div class="steps"><strong>Make a copy</strong>
+        <ol>
+          <li>In your folder, click <code>tool.html</code> once.</li>
+          <li><b>Windows:</b> press Ctrl+C, then Ctrl+V. <b>Mac:</b> press Cmd+D.</li>
+          <li>Rename the copy to <code>tool-v1-works.html</code> (press F2 on Windows, or Return on a Mac).</li>
+        </ol>
+      </div>
+      <p style="margin-top:14px;">From now on, <code>tool.html</code> is the one you change, and <code>tool-v1-works.html</code> is where you go back to. If a change breaks things, copy the contents of the v1 file back into <code>tool.html</code> and start the step again.</p>
+      <div class="watch"><strong>Good to know</strong><p>Name the copy for what it does, not just a number. It saves you opening three files to find the right one.</p></div>
+    </article>
+
+    <article class="lesson">
+      <header class="lesson-head"><span class="num">Step 08</span><label class="done"><input type="checkbox" data-lesson="8"> Done</label></header>
+      <h3>Add one improvement</h3>
+      <p>Pick one thing to add, then repeat the same loop: ask, try it, report back, save. Choose a suggestion or type your own.</p>
+      <div class="chips" id="chips"></div>
+      <label class="field-label" for="improve">The one thing to add</label>
+      <input class="field" id="improve" type="text" placeholder="For example: a button to delete a task">
+      <pre class="code wrap" id="prompt2" tabindex="0"></pre>
+      <div class="actions"><button type="button" class="btn small copy-btn" data-source="prompt2">Copy prompt</button><span class="copy-status" role="status"></span></div>
+      <p style="margin-top:14px;">Paste your whole current <code>tool.html</code> under the prompt, send it, then work through the same loop: put the new code in <code>tool.html</code>, test the new thing and the old things, report any problems, and save the result as <code>tool-v2-works.html</code>.</p>
+      <div class="watch"><strong>Good to know</strong><p>One improvement at a time. If you add two and something breaks, you will not know which one caused it.</p></div>
+    </article>
+  </section>
+
+  <div class="done-panel" id="build-done" hidden>
+    <h3 style="margin-bottom:8px;">You built it</h3>
+    <p>You have a working tool, a saved copy of the first version, and an improvement on top. That is the whole loop, and every project in the folder grew the same way. Keep going: pick the next improvement and run it again.</p>
+    <a class="btn ghost" href="#style" data-view="style">See how these projects are made</a>
+  </div>
+
+  <p><a class="back" href="#home" data-view="home">Back to home</a></p>
+</section>
+
+<footer>
+  <p>Written for anyone who wants to understand AI and have a bit of fun with it. Everything here is free, and a donation is appreciated.</p>
+</footer>
+
+</main>
+
+<script>
+(function () {
+  /* Each tab shows its own level page. Clicks switch pages directly; the URL hash is kept in sync. */
+  var names = ["home", "style", "build"];
+  var views = {};
+  names.forEach(function (n) { views[n] = document.getElementById("view-" + n); });
+  var navLinks = document.querySelectorAll(".site-nav ul a");
+
+  function show(name) {
+    if (!views[name]) name = "home";
+    names.forEach(function (n) { views[n].hidden = (n !== name); });
+    navLinks.forEach(function (a) {
+      if (a.getAttribute("data-view") === name) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest("a[data-view]") : null;
+    if (!a) return;
+    e.preventDefault();
+    var name = a.getAttribute("data-view");
+    show(name);
+    try { history.replaceState(null, "", "#" + name); } catch (err) {}
+  });
+
+  window.addEventListener("hashchange", function () { show((location.hash || "").slice(1)); });
+  show((location.hash || "").slice(1));
+
+  /* Lesson progress. Each level page keeps its own ticks, in this browser only. */
+  document.querySelectorAll("[data-progress]").forEach(function (box) {
+    var key = box.getAttribute("data-key");
+    var scope = box.closest(".view");
+    var boxes = scope.querySelectorAll("input[data-lesson]");
+    var total = boxes.length;
+    var label = box.querySelector(".progress-label");
+    var pct = box.querySelector(".progress-pct");
+    var bar = box.querySelector(".bar > span");
+    var done = {};
+    try { done = JSON.parse(localStorage.getItem(key) || "{}") || {}; } catch (e) { done = {}; }
+
+    function render() {
+      var n = 0;
+      boxes.forEach(function (b) { if (done[b.getAttribute("data-lesson")]) n++; });
+      var p = total ? Math.round((n / total) * 100) : 0;
+      label.textContent = n + " of " + total + " done";
+      pct.textContent = p + "%";
+      bar.style.width = p + "%";
+    }
+
+    boxes.forEach(function (b) {
+      var id = b.getAttribute("data-lesson");
+      b.checked = !!done[id];
+      b.addEventListener("change", function () {
+        done[id] = b.checked;
+        try { localStorage.setItem(key, JSON.stringify(done)); } catch (e) {}
+        render();
+      });
+    });
+    render();
+  });
+
+  /* Donation address copy buttons: enabled only once an address is pasted in. */
+  document.querySelectorAll(".copy-addr").forEach(function (b) {
+    var el = document.getElementById(b.getAttribute("data-target"));
+    b.disabled = !(el && el.textContent.trim());
+    b.addEventListener("click", function () {
+      var text = el ? el.textContent.trim() : "";
+      if (text && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { b.textContent = "Copied"; }, function () {});
+      }
+    });
+  });
+})();
+</script>
+<script>
+(function () {
+  /* Build your own: saved choices, live prompts, test list, copy buttons, finish panel. */
+  var root = document.getElementById("view-build");
+  if (!root) return;
+
+  var KEY = "learn-ai-build-state";
+  var state = { kind: "", desc: "", improve: "", tests: {} };
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+    if (saved && typeof saved === "object") {
+      state.kind = typeof saved.kind === "string" ? saved.kind : "";
+      state.desc = typeof saved.desc === "string" ? saved.desc : "";
+      state.improve = typeof saved.improve === "string" ? saved.improve : "";
+      state.tests = saved.tests && typeof saved.tests === "object" ? saved.tests : {};
+    }
+  } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var COMMON_OPEN = "The page opens when I double-click the file, with no error message.";
+  var KINDS = {
+    checklist: {
+      example: "I want a checklist where I can add tasks and tick them off. I type a task into a box and press Add. The task appears in a list with a tick box beside it. When I tick it, the task is crossed out. I will know it works when I can add three tasks and tick one off.",
+      tests: [
+        COMMON_OPEN,
+        "I can type a task and press Add, and it appears in the list.",
+        "I can add a second and a third task.",
+        "Ticking a task crosses it out, and unticking brings it back.",
+        "Pressing Add with an empty box does not add a blank task.",
+        "Everything is readable and nothing overlaps."
+      ],
+      ideas: ["Remember my tasks when I refresh the page", "A button to delete a task", "Show how many tasks are left"]
+    },
+    calculator: {
+      example: "I want a calculator with buttons for the numbers 0 to 9 and for plus, minus, times and divide. When I click the buttons, the numbers and the answer show in a big display at the top. A Clear button starts again. I will know it works when 12 + 30 shows 42.",
+      tests: [
+        COMMON_OPEN,
+        "12 + 30 shows 42.",
+        "A longer sum, such as 7 x 8 - 6, shows 50.",
+        "Dividing by zero shows a sensible message and does not break the page.",
+        "Clear resets the display.",
+        "Clicking several operators in a row does not crash it."
+      ],
+      ideas: ["Let me type with the keyboard as well as clicking", "Add a decimal point button", "Show my last few sums underneath"]
+    },
+    game: {
+      example: "I want a simple game where a square at the bottom of the screen moves left and right with the arrow keys. Dots fall from the top. Each dot I catch adds one to the score, which shows at the top. I will know it works when I can move the square and the score goes up.",
+      tests: [
+        COMMON_OPEN,
+        "The square moves left and right when I press the arrow keys.",
+        "Dots fall from the top of the screen.",
+        "Catching a dot adds one to the score.",
+        "Missing dots does something sensible, such as ending the game or losing a life.",
+        "Doing nothing for ten seconds does not break anything."
+      ],
+      ideas: ["Show a high score that is remembered", "Make the dots fall faster as the score goes up", "Add a Start again button"]
+    },
+    own: {
+      example: "",
+      tests: [
+        COMMON_OPEN,
+        "Everything I described in step 2 works once, in the order I described it.",
+        "I tried something unusual, such as leaving a box empty or typing a very long word.",
+        "I pressed every button twice.",
+        "I did nothing for ten seconds, and nothing broke.",
+        "Everything is readable and nothing overlaps."
+      ],
+      ideas: ["Remember what I entered after I refresh the page", "Make it easier to read, with larger text and clearer labels", "Add a Clear or Start again button"]
+    }
+  };
+
+  var radios = root.querySelectorAll('input[name="kind"]');
+  var desc = document.getElementById("desc");
+  var improve = document.getElementById("improve");
+  var prompt1 = document.getElementById("prompt1");
+  var prompt2 = document.getElementById("prompt2");
+  var testsEl = document.getElementById("tests");
+  var chipsEl = document.getElementById("chips");
+
+  function renderChoices() {
+    radios.forEach(function (r) {
+      r.checked = (r.value === state.kind);
+      r.parentNode.classList.toggle("on", r.checked);
+    });
+  }
+
+  function renderPrompt1() {
+    var d = state.desc.trim() || "[describe your idea here]";
+    prompt1.textContent =
+      "Please build this as one web page that I can open in my browser by double-clicking the file. " +
+      "Give me the complete code in one piece, as a single HTML file with no other files and nothing to install. " +
+      "Use only HTML, CSS and JavaScript inside that one file. Do not use Python or anything else that needs installing.\n\n" +
+      "What I want:\n" + d + "\n\n" +
+      "Make only this first version, with nothing extra. Keep it simple, with large readable text and a clear label on every button. " +
+      "After the code, list in two or three lines what I should try to check that it works.";
+  }
+
+  function renderPrompt2() {
+    var i = state.improve.trim() || "[the one thing to add]";
+    prompt2.textContent =
+      "Here is my current working file. It works, so please do not change how anything else behaves.\n\n" +
+      "Please add one thing:\n" + i + "\n\n" +
+      "Give me the complete updated file in one piece, still as a single HTML file with no Python and nothing to install.\n\n" +
+      "(Paste your whole current tool.html file below this line.)";
+  }
+
+  function renderTests() {
+    testsEl.innerHTML = "";
+    var k = KINDS[state.kind];
+    if (!k) {
+      var li = document.createElement("li");
+      li.textContent = "Pick what you are building in step 1 to see your list.";
+      li.style.color = "var(--muted)";
+      testsEl.appendChild(li);
+      return;
+    }
+    k.tests.forEach(function (text, idx) {
+      var id = state.kind + ":" + idx;
+      var li = document.createElement("li");
+      var label = document.createElement("label");
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !!state.tests[id];
+      cb.addEventListener("change", function () {
+        state.tests[id] = cb.checked;
+        save();
+      });
+      var span = document.createElement("span");
+      span.textContent = text;
+      label.appendChild(cb);
+      label.appendChild(span);
+      li.appendChild(label);
+      testsEl.appendChild(li);
+    });
+  }
+
+  function renderChips() {
+    chipsEl.innerHTML = "";
+    var k = KINDS[state.kind] || KINDS.own;
+    k.ideas.forEach(function (text) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = text;
+      b.addEventListener("click", function () {
+        state.improve = text;
+        improve.value = text;
+        renderPrompt2();
+        save();
+      });
+      chipsEl.appendChild(b);
+    });
+  }
+
+  radios.forEach(function (r) {
+    r.addEventListener("change", function () {
+      var prev = KINDS[state.kind];
+      var untouched = !state.desc.trim() || (prev && state.desc === prev.example);
+      state.kind = r.value;
+      if (untouched) {
+        state.desc = KINDS[state.kind].example;
+        desc.value = state.desc;
+      }
+      renderChoices();
+      renderPrompt1();
+      renderTests();
+      renderChips();
+      save();
+    });
+  });
+
+  desc.addEventListener("input", function () {
+    state.desc = desc.value;
+    renderPrompt1();
+    save();
+  });
+  improve.addEventListener("input", function () {
+    state.improve = improve.value;
+    renderPrompt2();
+    save();
+  });
+
+  /* Copy buttons */
+  root.querySelectorAll(".copy-btn").forEach(function (btn) {
+    var status = btn.parentNode.querySelector(".copy-status");
+    btn.addEventListener("click", function () {
+      var src = document.getElementById(btn.getAttribute("data-source"));
+      var text = src ? (src.value !== undefined && src.tagName === "TEXTAREA" ? src.value : src.textContent) : "";
+      var ok = function () { status.textContent = "Copied."; };
+      var fail = function () {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "absolute";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        var done = false;
+        try { done = document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta);
+        status.textContent = done ? "Copied." : "Select the text above and copy it.";
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok, fail);
+      } else {
+        fail();
+      }
+    });
+  });
+
+  /* Finish panel appears once all eight steps are ticked */
+  var doneBox = document.getElementById("build-done");
+  function updateDone() {
+    var boxes = root.querySelectorAll("input[data-lesson]");
+    var all = boxes.length > 0 && Array.prototype.every.call(boxes, function (b) { return b.checked; });
+    doneBox.hidden = !all;
+  }
+  root.addEventListener("change", function (e) {
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute("data-lesson")) updateDone();
+  });
+
+  /* Start state */
+  desc.value = state.desc;
+  improve.value = state.improve;
+  renderChoices();
+  renderPrompt1();
+  renderPrompt2();
+  renderTests();
+  renderChips();
+  updateDone();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Void Systems | Local Inference & Engine Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { background: #0a0614; color: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
+    .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .grad-text { background: linear-gradient(90deg, #f0abfc, #22d3ee, #fbbf24); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .glow { box-shadow: 0 0 40px -10px var(--c, #e879f9); }
+    .card { background: linear-gradient(160deg, #15102a 0%, #0d0a1c 100%); border: 1px solid #2e2550; transition: transform .2s, box-shadow .2s, border-color .2s; }
+    .card:hover { transform: translateY(-4px); border-color: var(--c); box-shadow: 0 18px 40px -18px var(--c); }
+    .blob { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: .45; pointer-events: none; }
+    .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+    .scroll-thin::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 4px; }
+    .scroll-thin::-webkit-scrollbar-track { background: #0d0a1c; }
+    .file-btn[aria-selected="true"] { background: #2e1065; border-color: var(--c); color: #fff; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Nav -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-[#0a0614]/80 border-b border-violet-900/60">
+    <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+      <a href="#top" class="flex items-center gap-3">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-fuchsia-500 to-cyan-400 flex items-center justify-center font-bold mono text-sm">V</span>
+        <span class="font-extrabold tracking-tight">Void Systems</span>
+      </a>
+      <nav class="hidden md:flex gap-7 text-sm font-medium text-violet-200">
+        <a href="#projects" class="hover:text-cyan-300">Projects</a>
+        <a href="#code" class="hover:text-cyan-300">Code</a>
+        <a href="#models" class="hover:text-cyan-300">Models</a>
+        <a href="#workflow" class="hover:text-cyan-300">Workflow</a>
+      </nav>
+      <button id="menuBtn" aria-label="Menu" class="md:hidden text-violet-200 text-2xl">&#9776;</button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden px-5 pb-4 flex flex-col gap-3 text-violet-200">
+      <a href="#projects">Projects</a><a href="#code">Code</a><a href="#models">Models</a><a href="#workflow">Workflow</a>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+
+    <!-- Hero -->
+    <section id="top" class="relative overflow-hidden border-b border-violet-900/60">
+      <div class="blob w-96 h-96 bg-fuchsia-600 -top-20 -left-20"></div>
+      <div class="blob w-96 h-96 bg-cyan-500 top-10 right-0"></div>
+      <div class="blob w-72 h-72 bg-amber-400 bottom-0 left-1/3 opacity-25"></div>
+      <div class="relative max-w-6xl mx-auto px-5 py-24">
+        <span class="inline-block mb-6 px-3 py-1 rounded-full text-xs mono bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/40">ENGINEERING PORTFOLIO &middot; 8 MODULES &middot; ~52,500 LINES</span>
+        <h1 class="text-5xl sm:text-6xl font-extrabold leading-[1.05] tracking-tight max-w-4xl">
+          Local GGUF engines, <span class="grad-text">Warp physics</span> and voxel sandboxes
+        </h1>
+        <p class="mt-6 text-lg text-violet-200/90 max-w-2xl leading-relaxed">
+          Custom inference runners, CUDA kernel self-checks, graph-coloured contact solvers and spring-bond fracture, built from the code up.
+        </p>
+        <div class="mt-9 flex flex-wrap gap-4">
+          <a href="#projects" class="px-5 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-cyan-400 text-slate-950 font-bold text-sm">See the projects</a>
+          <a href="#code" class="px-5 py-3 rounded-xl border border-cyan-400/60 text-cyan-300 font-semibold text-sm hover:bg-cyan-400/10">Read the code</a>
+        </div>
+        <p class="mt-10 text-xs text-violet-300/70 mono">Status note: everything here was built by reading the code. Nothing has been run end to end yet.</p>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="py-20">
+      <div class="max-w-6xl mx-auto px-5">
+        <p class="mono text-xs tracking-widest text-cyan-300 uppercase">01 &middot; Modules</p>
+        <h2 class="text-4xl font-extrabold mt-2">Project <span class="grad-text">modules</span></h2>
+        <p class="text-violet-200/80 mt-3 max-w-2xl">Click a card to open its code in the viewer below.</p>
+        <div id="projectGrid" class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
+      </div>
+    </section>
+
+    <!-- Code viewer -->
+    <section id="code" class="py-20 bg-[#0d0a1c] border-y border-violet-900/60">
+      <div class="max-w-6xl mx-auto px-5">
+        <p class="mono text-xs tracking-widest text-amber-300 uppercase">02 &middot; Source</p>
+        <h2 class="text-4xl font-extrabold mt-2">Code <span class="grad-text">viewer</span></h2>
+        <p class="text-violet-200/80 mt-3 max-w-2xl">Short excerpts copied from the real files, with what is known about each one.</p>
+        <div class="mt-10 grid lg:grid-cols-12 gap-0 rounded-2xl overflow-hidden border border-violet-800/60">
+          <div id="fileList" class="lg:col-span-4 bg-[#0a0614] p-3 flex flex-col gap-2 border-b lg:border-b-0 lg:border-r border-violet-900/60"></div>
+          <div class="lg:col-span-8 bg-[#07050f] flex flex-col min-w-0">
+            <div class="flex items-center justify-between px-5 py-3 border-b border-violet-900/60">
+              <span id="fileName" class="mono text-sm text-cyan-300 font-semibold truncate"></span>
+              <button id="copyBtn" class="mono text-xs px-3 py-1.5 rounded-lg bg-fuchsia-500/20 text-fuchsia-200 hover:bg-fuchsia-500/35">Copy excerpt</button>
+            </div>
+            <pre id="codeView" class="scroll-thin p-5 mono text-[13px] leading-relaxed text-violet-100 overflow-x-auto whitespace-pre"></pre>
+            <div id="fileNotes" class="px-5 pb-5 text-sm text-violet-200/90 space-y-2 border-t border-violet-900/60 pt-4"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Models -->
+    <section id="models" class="py-20">
+      <div class="max-w-6xl mx-auto px-5">
+        <p class="mono text-xs tracking-widest text-lime-300 uppercase">03 &middot; Models</p>
+        <h2 class="text-4xl font-extrabold mt-2">Planned <span class="grad-text">model roles</span></h2>
+        <p class="text-violet-200/80 mt-3 max-w-2xl">These are the roles each model is meant to cover. They are a plan, not a record of runs.</p>
+        <div id="modelGrid" class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"></div>
+        <div class="mt-10 card rounded-2xl overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="mono text-xs uppercase tracking-wider text-violet-300">
+              <tr class="border-b border-violet-900/60">
+                <th class="py-4 px-5">Task</th><th class="py-4 px-5">Planned model</th><th class="py-4 px-5">Setting</th><th class="py-4 px-5">Fallback</th>
+              </tr>
+            </thead>
+            <tbody id="routingTable" class="divide-y divide-violet-900/50"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workflow -->
+    <section id="workflow" class="py-20 bg-[#0d0a1c] border-t border-violet-900/60">
+      <div class="max-w-6xl mx-auto px-5">
+        <p class="mono text-xs tracking-widest text-fuchsia-300 uppercase">04 &middot; Method</p>
+        <h2 class="text-4xl font-extrabold mt-2">From rough idea to <span class="grad-text">verified code</span></h2>
+        <div id="workflowGrid" class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4"></div>
+
+        <h3 class="mt-16 mono text-sm uppercase tracking-widest text-amber-300">Cross-cutting patterns</h3>
+        <div id="principlesGrid" class="mt-6 grid gap-6 md:grid-cols-3"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-violet-900/60 py-10 text-sm text-violet-300/80">
+    <div class="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row justify-between gap-3">
+      <span class="font-bold text-white">Void Systems</span>
+      <span class="mono text-xs">Offline GGUF &middot; NVIDIA Warp &middot; Single-file pipelines</span>
+    </div>
+  </footer>
+
+  <div id="toast" class="fixed bottom-6 right-6 z-50 opacity-0 translate-y-6 transition-all duration-300 pointer-events-none">
+    <div class="bg-fuchsia-600 text-white px-4 py-3 rounded-xl shadow-2xl mono text-xs" id="toastMsg"></div>
+  </div>
+
+<script>
+/* ---------- data (edit here) ---------- */
+const projects = [
+  {
+    id: "promptforge", name: "promptforge_simple.py", lines: "~220 lines", colour: "#f0abfc",
+    tags: ["Tkinter", "Queue + after", "GGUF magic bytes"],
+    what: "One-window app. Finds local .gguf models, turns a rough request into a BRIEF and PROMPT, and copies the prompt.",
+    snippet:
+`def is_gguf(path: Path) -> bool:
+    """True if the file starts with the GGUF signature."""
+    try:
+        with path.open("rb") as handle:
+            return handle.read(4) == b"GGUF"
+    except OSError:
+        return False
+
+def split_reply(text: str) -> tuple[str, str]:
+    if "PROMPT:" not in text:
+        return "", text.strip()
+    head, _, body = text.partition("PROMPT:")
+    return head.replace("BRIEF:", "", 1).strip(), body.strip()`,
+    learned: "Tkinter must only be touched from the main thread, so the worker thread hands results over a queue that the window polls every 150 ms.",
+    issue: "Hardcoded personal model path. Errors show a generic popup with no recovery hint."
+  },
+  {
+    id: "builtin", name: "builtin_loader.py", lines: "~1,300 lines", colour: "#22d3ee",
+    tags: ["GGUF parser", "NumPy / CuPy", "Quantised weights"],
+    what: "Reads a GGUF file and runs it with no llama.cpp: numpy on the CPU, CuPy on the GPU. Its NativeLlm class copies the llama-cpp-python method names.",
+    snippet:
+`BLOCKS = {"q8_0": (32, 34), "q4_k": (256, 144), "q6_k": (256, 210)}   # kind -> (elements per block, bytes per block)
+
+def read_gguf(f):
+    if f.read(4) != b"GGUF":
+        raise GGUFError("not a GGUF file (the first four bytes should be GGUF)")
+    version = _read(f, "I")
+    tensor_count = _read(f, "Q")
+    kv_count = _read(f, "Q")
+    ...
+    alignment = metadata.get("general.alignment", 32) or 32
+    data_start = pos + (-pos % alignment)`,
+    learned: "Block sizes are the format. Weights stay quantised on disk through np.memmap and are decoded one block at a time.",
+    issue: "Native loads are not confirmed on a real run. Q5_K, MXFP4 and GPT-OSS are unsupported, and rope scaling is ignored."
+  },
+  {
+    id: "physics", name: "physics_engine.py", lines: "~10,900 lines", colour: "#818cf8",
+    tags: ["NVIDIA Warp", "Graph colouring", "State manager"],
+    what: "Four programs in one file: a 2D rigid-body engine on Warp, a state manager, a GGUF runner, and the Destruction lab.",
+    snippet:
+`STEP_DT = 1 / 240        # the GPU physics always steps at this fixed rate (4 steps per 1/60 s bundle)
+BUNDLE = 4               # substeps recorded in one graph (4 x 1/240 s = 1/60 s)
+ITERATIONS = 8           # solver sweeps per substep (each sweeps every colour)
+HALF_LIFE_MINUTES = 24 * 60   # memory confidence halves every simulated day`,
+    learned: "Contacts are graph-coloured so bodies that do not touch can be solved in parallel.",
+    issue: "The 14 Oct engine edits were recorded as not run. A third copy of the GGUF loader sits in Part 3."
+  },
+  {
+    id: "fracture", name: "fracture_lab.py", lines: "~835 lines", colour: "#fbbf24",
+    tags: ["Spring bonds", "Sleep / wake", "Benchmark"],
+    what: "Blocks split into micro-cube lattices joined by springs with health. Bonds stretch, creep past yield, then snap.",
+    snippet:
+`# states: 0 asleep (structure), 1 awake, 2 asleep (rubble), 3 inert
+if Leff > lm or ext < -0.9 * s:            # snaps under tension/shear; stone survives compression
+    hp[i * 6 + d] = 0.0
+    hp[j * 6 + (d ^ 1)] = 0.0
+...
+SLEEP_SPEED_UNUSED = 0.90       # m/s`,
+    learned: "Sleep and wake is the main performance lever. A validation pass cuts bonds that would otherwise wake two sleeping cubes forever.",
+    issue: "SLEEP_SPEED_UNUSED is dead code. Stability constants were tuned by hand."
+  },
+  {
+    id: "power", name: "power_monitor.py", lines: "~170 lines", colour: "#34d399",
+    tags: ["WMI via PowerShell", "No pip packages", "CSV log"],
+    what: "Prints battery %, volts, amps, battery watts, system watts while discharging, GPU watts and time left. Ctrl+C prints averages.",
+    snippet:
+`if d.get("Discharging") and discharge > 0:
+    watts, state = -discharge, "discharging"
+elif d.get("Charging") and charge > 0:
+    watts, state = charge, "charging"
+...
+runtime_h = (b["remaining_wh"] / system) if (system and b["remaining_wh"]) else None`,
+    learned: "The sign convention (+ charging, - discharging) keeps every number consistent. Runtime is remaining Wh divided by system W.",
+    issue: "The CSV has 12 columns, but VoidLoader's copy writes 16 values and still uses the old header."
+  },
+  {
+    id: "minecraft", name: "minecraft_reasonos.py", lines: "~4,800 lines", colour: "#f472b6",
+    tags: ["pygame + OpenGL", "Value noise", "Save versioning"],
+    what: "Single-file voxel game: procedural terrain, houses, day and night, economy, save and load, and voxel collapse on the GPU.",
+    snippet:
+`SAVE_VERSION = 4   # increment if CHUNK_SIZE, WORLD_H, terrain or block ids change
+CAVE_THRESHOLD = 0.42
+_VP_FAILED = False   # GPU fallback flag: if the GPU path fails, the game keeps running`,
+    learned: "Saves need a version number whenever the terrain or block IDs change, or old worlds load wrong.",
+    issue: "House-spawn chance is 0.5 here but 0.0 in voidcraft_graphics, so the two copies have drifted."
+  },
+  {
+    id: "voidgfx", name: "voidcraft_graphics.py", lines: "~3,300 lines", colour: "#fb7185",
+    tags: ["GLSL", "Process pool", "Density field"],
+    what: "Rendering layer for Voidcraft: shaders, background chunk meshing, particles, the HUD and GPU timers. Digging removes density to make craters.",
+    snippet:
+`MESH_WORKERS      = 2     # background processes that build chunk meshes (separate from the GIL)
+MESH_MAX_PENDING  = 6     # chunks queued for meshing at once; the rest wait for a later frame
+VERT_STRIDE       = 9 * 4 # bytes per vertex: position (3) + colour (3) + texture coords and flag (3)
+DEBRIS_PER_DUG = 20.0     # dust particles made per unit of dirt dug (DEBUG: raised from 0.5)`,
+    learned: "Meshing runs in processes rather than threads, so the GIL does not stall the frame.",
+    issue: "Tuning by eye (the DEBUG comment on debris). Stub classes stand in for missing parts."
+  },
+  {
+    id: "voidloader", name: "VoidLoader-new.py", lines: "~31,000 lines", colour: "#facc15",
+    tags: ["Tkinter studio", "Two engines", "HTTP API"],
+    what: "The full studio: chat with tabs, two engines, an HTTP API and phone page on port 5178, a Block Editor on 5177, Draw, Music, Images and Power tools, and a 40-command console.",
+    snippet:
+`"""
+Voidloader - the local-model chat app with the Studio shell.
+Single-file Tkinter app that runs local .gguf models in-process through llama-cpp-python (CUDA
+build) and / or its own built-in loader (Settings > Backends).
+"""
+WINDOW_WIDTH = 1920
+WINDOW_HEIGHT = 1000
+BUTTON_RADIUS = 8
+
+class LocalLlamaBackend:   # runs both engines; a model stays on the engine that loaded it`,
+    learned: "A written audit separates 'wired' from 'verified', and the knowledge file tags each claim as [CODE] or [UNTESTED].",
+    issue: "SimpleChat is about 9,700 lines. Model state has no single owner, CORS is * on the LAN, and the updater has no hash check."
+  }
+];
+
+const docs = [
+  {
+    id: "audit", name: "AUDIT.txt", colour: "#f59e0b",
+    snippet: `Key takeaway: "Finished" means wired, not verified.
+"Finished" here means the wiring exists. Nothing has been confirmed on a real run.
+
+PART 3: ACTION PLAN
+1. Centralise the GGUF loader copies into one module.
+2. Break SimpleChat into controllers.
+3. Add context-window truncation.
+4. Close the LAN CORS opening on port 5178.`,
+    learned: "Separating 'finished' from 'verified' stops a wired feature being mistaken for a working one.",
+    issue: "Several items are still open."
+  },
+  {
+    id: "knowledge", name: "GGUF_knowledge.txt", colour: "#22d3ee",
+    snippet: `[CODE] Magic bytes: first 4 bytes must equal b'GGUF'.
+[CODE] Quantisation: Q8_0 = 32 values in 34 bytes; Q4_K = 256 values in 144 bytes.
+[UNTESTED] MXFP4 and GPT-OSS handling.
+[UNTESTED] RoPE scaling is ignored in the native forward pass.`,
+    learned: "Tagging each claim as [CODE] or [UNTESTED] keeps what was read apart from what was run.",
+    issue: "Native loads are still unconfirmed (K2, B28)."
+  },
+  {
+    id: "progress", name: "Voidloader_Documentation_Progress.html", colour: "#34d399",
+    snippet: `Documentation progress: 58 checklist items in 9 sections.
+Sections: Project baseline, Architecture map, Feature inventory, Model state,
+Testing, Security, Performance, Loose ends, Release readiness.
+Progress is saved in the browser.`,
+    learned: "A written plan became a tool you can tick through.",
+    issue: "Ticking an item is not the same as verifying it."
+  }
+];
+
+const models = [
+  { name: "Claude Haiku 4.5", colour: "#f0abfc", role: "Triage", detail: "Quick pre-check and splitting of a rough request." },
+  { name: "Claude Haiku 5.5", colour: "#22d3ee", role: "Prompt briefs", detail: "Turns a request into a brief, at a moderate temperature." },
+  { name: "Claude Sonnet 5.5", colour: "#818cf8", role: "Deep reasoning", detail: "Solver and kernel reasoning, with extended thinking on." },
+  { name: "Gemini 4 Argon", colour: "#fbbf24", role: "Large codebases", detail: "Whole-file audits of multi-thousand-line modules. Not yet run." }
+];
+
+const routing = [
+  { task: "Prompt pre-check and splitting", model: "Claude Haiku 4.5", setting: "Low latency", fallback: "Local PromptForge (GGUF Q4_K)" },
+  { task: "Structured brief generation", model: "Claude Haiku 5.5", setting: "Temperature 0.3", fallback: "NativeLlm (Q8_0)" },
+  { task: "Warp kernel and solver work", model: "Claude Sonnet 5.5", setting: "Extended thinking", fallback: "Local CuPy kernel check" },
+  { task: "Monolith architecture audit", model: "Gemini 4 Argon", setting: "Full-context input", fallback: "Manual AUDIT.txt checklist" }
+];
+
+const workflow = [
+  { phase: "Phase 1", title: "Offline prompt forging", body: "Rough ideas become structured briefs through a local model. Magic-byte checks and a thread-safe queue keep the window responsive." },
+  { phase: "Phase 2", title: "Engine self-checks", body: "Weights are memory-mapped and decoded per block. Each GPU kernel is checked against a CPU reference, and switched off above 1e-3 error." },
+  { phase: "Phase 3", title: "GPU physics", body: "A fixed 240 Hz step, recorded as 60 Hz graphs, with graph-coloured contacts solved in parallel." },
+  { phase: "Phase 4", title: "Verification ladder", body: "Separate 'wired' from 'verified' using self-tests, a benchmark and the audit log. Most items are still wired only." }
+];
+
+const principles = [
+  { colour: "#f59e0b", title: "Copy drift", body: "The same GGUF loader lives in four places. One shared module is the next big fix." },
+  { colour: "#22d3ee", title: "Interface mimicry", body: "NativeLlm keeps llama-cpp-python's method names, so the two engines can be swapped without changing callers." },
+  { colour: "#34d399", title: "Graceful fallback", body: "Flags like _VP_FAILED and lazy imports mean a missing GPU or numpy degrades the feature instead of crashing the app." }
+];
+
+/* ---------- render ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+let current = null;
+
+function renderProjects() {
+  $("projectGrid").innerHTML = projects.map(p => `
+    <button data-open="${p.id}" class="card text-left rounded-2xl p-6 flex flex-col gap-4" style="--c:${p.colour}; border-top:4px solid ${p.colour}">
+      <div class="flex items-start justify-between gap-3">
+        <h3 class="mono font-bold text-white break-all">${esc(p.name)}</h3>
+        <span class="mono text-xs px-2 py-0.5 rounded-full whitespace-nowrap" style="background:${p.colour}22;color:${p.colour}">${esc(p.lines)}</span>
+      </div>
+      <p class="text-sm text-violet-200/85 leading-relaxed">${esc(p.what)}</p>
+      <div class="flex flex-wrap gap-2 mt-auto">
+        ${p.tags.map(t => `<span class="text-[11px] mono px-2 py-1 rounded bg-violet-950 text-violet-200 border border-violet-800/60">${esc(t)}</span>`).join("")}
+      </div>
+    </button>`).join("");
+}
+
+function renderModels() {
+  $("modelGrid").innerHTML = models.map(m => `
+    <div class="card rounded-2xl p-6" style="--c:${m.colour}; border-left:4px solid ${m.colour}">
+      <p class="mono text-xs uppercase tracking-wider" style="color:${m.colour}">${esc(m.role)}</p>
+      <h3 class="font-bold text-lg text-white mt-2">${esc(m.name)}</h3>
+      <p class="text-sm text-violet-200/80 mt-3 leading-relaxed">${esc(m.detail)}</p>
+    </div>`).join("");
+  $("routingTable").innerHTML = routing.map(r => `
+    <tr class="hover:bg-violet-950/50">
+      <td class="py-4 px-5 font-medium text-white">${esc(r.task)}</td>
+      <td class="py-4 px-5 mono text-cyan-300">${esc(r.model)}</td>
+      <td class="py-4 px-5 text-violet-200/85">${esc(r.setting)}</td>
+      <td class="py-4 px-5 text-violet-200/70">${esc(r.fallback)}</td>
+    </tr>`).join("");
+}
+
+function renderWorkflow() {
+  const colours = ["#f0abfc", "#22d3ee", "#fbbf24", "#34d399"];
+  $("workflowGrid").innerHTML = workflow.map((w, i) => `
+    <div class="card rounded-2xl p-6" style="--c:${colours[i]}">
+      <p class="mono text-xs" style="color:${colours[i]}">${esc(w.phase)}</p>
+      <h3 class="font-bold text-white text-lg mt-2">${esc(w.title)}</h3>
+      <p class="text-sm text-violet-200/80 mt-3 leading-relaxed">${esc(w.body)}</p>
+    </div>`).join("");
+  $("principlesGrid").innerHTML = principles.map(p => `
+    <div class="rounded-2xl p-5 border" style="border-color:${p.colour}66; background:${p.colour}0d">
+      <h4 class="font-bold text-white" style="color:${p.colour}">${esc(p.title)}</h4>
+      <p class="text-sm text-violet-200/85 mt-2 leading-relaxed">${esc(p.body)}</p>
+    </div>`).join("");
+}
+
+function renderFileList() {
+  const items = [
+    ...projects.map(p => ({ key: p.id, name: p.name, colour: p.colour, group: "Modules" })),
+    ...docs.map(d => ({ key: d.id, name: d.name, colour: d.colour, group: "Documents" }))
+  ];
+  let last = "";
+  $("fileList").innerHTML = items.map(it => {
+    const head = it.group !== last ? (last = it.group, `<p class="mono text-[11px] uppercase tracking-widest text-violet-400 px-2 pt-2">${it.group}</p>`) : "";
+    return head + `<button class="file-btn text-left mono text-xs px-3 py-2.5 rounded-lg border border-transparent text-violet-200 hover:bg-violet-950" data-file="${it.key}" style="--c:${it.colour}" aria-selected="false"><span style="color:${it.colour}">&#9679;</span> ${esc(it.name)}</button>`;
+  }).join("");
+}
+
+function showFile(key) {
+  const item = projects.find(p => p.id === key) || docs.find(d => d.id === key);
+  if (!item) return;
+  current = item;
+  document.querySelectorAll(".file-btn").forEach(b => {
+    const on = b.dataset.file === key;
+    b.setAttribute("aria-selected", on);
+    b.style.setProperty("--c", on ? item.colour : "");
+  });
+  $("fileName").textContent = item.name;
+  $("fileName").style.color = item.colour;
+  $("codeView").textContent = item.snippet;
+  $("fileNotes").innerHTML = `
+    <p><span class="mono text-xs text-fuchsia-300 uppercase">What it taught</span><br>${esc(item.learned || "")}</p>
+    <p><span class="mono text-xs text-amber-300 uppercase">Known issue</span><br>${esc(item.issue || "")}</p>`;
+}
+
+function toast(msg) {
+  $("toastMsg").textContent = msg;
+  $("toast").classList.remove("opacity-0", "translate-y-6");
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => $("toast").classList.add("opacity-0", "translate-y-6"), 1800);
+}
+
+document.addEventListener("click", e => {
+  const open = e.target.closest("[data-open]");
+  if (open) { showFile(open.dataset.open); $("code").scrollIntoView({ behavior: "smooth" }); return; }
+  const f = e.target.closest("[data-file]");
+  if (f) showFile(f.dataset.file);
+});
+
+$("copyBtn").addEventListener("click", async () => {
+  if (!current) return toast("Pick a file first");
+  try { await navigator.clipboard.writeText(current.snippet); toast("Excerpt copied"); }
+  catch (err) { toast("Copy failed. Select the text by hand."); }
+});
+
+$("menuBtn").addEventListener("click", () => $("mobileMenu").classList.toggle("hidden"));
+
+renderProjects();
+renderModels();
+renderWorkflow();
+renderFileList();
+showFile("promptforge");
+</script>
+</body>
+</html>
